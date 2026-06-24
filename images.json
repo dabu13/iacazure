@@ -1,0 +1,46 @@
+[
+  {
+    "architecture": "x64",
+    "imageDeprecationStatus": {
+      "imageState": "Active"
+    },
+    "offer": "UbuntuServer",
+    "publisher": "Canonical",
+    "sku": "16.04-LTS",
+    "urn": "Canonical:UbuntuServer:16.04-LTS:16.04.202109281",
+    "version": "16.04.202109281"
+  },
+  {
+    "architecture": "x64",
+    "imageDeprecationStatus": {
+      "imageState": "Active"
+    },
+    "offer": "UbuntuServer",
+    "publisher": "Canonical",
+    "sku": "16.04.0-LTS",
+    "urn": "Canonical:UbuntuServer:16.04.0-LTS:16.04.202109281",
+    "version": "16.04.202109281"
+  },
+  {
+    "architecture": "x64",
+    "imageDeprecationStatus": {
+      "imageState": "Active"
+    },
+    "offer": "UbuntuServer",
+    "publisher": "Canonical",
+    "sku": "16_04-lts-gen2",
+    "urn": "Canonical:UbuntuServer:16_04-lts-gen2:16.04.202109281",
+    "version": "16.04.202109281"
+  },
+  {
+    "architecture": "x64",
+    "imageDeprecationStatus": {
+      "imageState": "Active"
+    },
+    "offer": "UbuntuServer",
+    "publisher": "Canonical",
+    "sku": "16_04_0-lts-gen2",
+    "urn": "Canonical:UbuntuServer:16_04_0-lts-gen2:16.04.202109281",
+    "version": "16.04.202109281"
+  }
+]
