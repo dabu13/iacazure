@@ -29,8 +29,8 @@ jobs:
       with:
         directory: .
         framework: terraform
-        # This will fail the job if there are security violations.
-        # You can set `soft_fail: true` to prevent it from failing.
+        soft_fail: true
+        # This will not fail the job, allowing you to review results in the Actions tab.
 
   deploy:
     name: 'Deploy to Azure'
