@@ -1,0 +1,58 @@
+name: 'Terraform Deploy to Azure'
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  id-token: write # Required for requesting the OIDC token
+  contents: read  # Required for actions/checkout
+
+env:
+  ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+  ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+  ARM_USE_OIDC: true
+
+jobs:
+  terraform:
+    name: 'Terraform'
+    runs-on: ubuntu-latest
+    
+    steps:
+    # 1. Checkout the repository to the GitHub Actions runner
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    # 2. Log in to Azure using OIDC (OpenID Connect)
+    - name: Azure login
+      uses: azure/login@v2
+      with:
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+    # 3. Setup Terraform
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+
+    # 4. Initialize Terraform (this will use the Azure backend)
+    - name: Terraform Init
+      run: terraform init
+
+    # 5. Check formatting
+    - name: Terraform Format
+      run: terraform fmt -check
+      continue-on-error: true
+
+    # 6. Generate a Terraform Plan on Pull Requests
+    - name: Terraform Plan
+      if: github.event_name == 'pull_request'
+      run: terraform plan -out=tfplan
+
+    # 7. Apply the Terraform Plan on pushes to main
+    - name: Terraform Apply
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      run: terraform apply -auto-approve
