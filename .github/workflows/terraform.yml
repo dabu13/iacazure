@@ -17,16 +17,36 @@ env:
   ARM_USE_OIDC: true
 
 jobs:
-  terraform:
-    name: 'Terraform'
+  scan:
+    name: 'Checkov Security Scan'
     runs-on: ubuntu-latest
-    
     steps:
-    # 1. Checkout the repository to the GitHub Actions runner
     - name: Checkout
       uses: actions/checkout@v4
 
-    # 2. Log in to Azure using OIDC (OpenID Connect)
+    - name: Run Checkov Scan
+      uses: bridgecrewio/checkov-action@master
+      with:
+        directory: .
+        framework: terraform
+        # This will fail the job if there are security violations.
+        # You can set `soft_fail: true` to prevent it from failing.
+
+  deploy:
+    name: 'Deploy to Azure'
+    runs-on: ubuntu-latest
+    needs: scan
+    # Only run the deploy job on the main branch pushes, not Pull Requests
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    # This environment name creates the manual approval gate in GitHub
+    environment:
+      name: production
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
     - name: Azure login
       uses: azure/login@v2
       with:
@@ -34,25 +54,14 @@ jobs:
         tenant-id: ${{ secrets.AZURE_TENANT_ID }}
         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-    # 3. Setup Terraform
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v3
 
-    # 4. Initialize Terraform (this will use the Azure backend)
     - name: Terraform Init
       run: terraform init
 
-    # 5. Check formatting
-    - name: Terraform Format
-      run: terraform fmt -check
-      continue-on-error: true
-
-    # 6. Generate a Terraform Plan on Pull Requests
     - name: Terraform Plan
-      if: github.event_name == 'pull_request'
       run: terraform plan -out=tfplan
 
-    # 7. Apply the Terraform Plan on pushes to main
     - name: Terraform Apply
-      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-      run: terraform apply -auto-approve
+      run: terraform apply -auto-approve tfplan

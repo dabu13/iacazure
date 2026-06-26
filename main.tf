@@ -44,17 +44,17 @@ resource "azurerm_lb" "lb" {
 }
 
 resource "azurerm_lb_backend_address_pool" "bepool" {
-  name                = "${var.prefix}-bepool"
-  loadbalancer_id     = azurerm_lb.lb.id
-  
+  name            = "${var.prefix}-bepool"
+  loadbalancer_id = azurerm_lb.lb.id
+
 }
 
 resource "azurerm_lb_probe" "ssh_probe" {
-  name                = "ssh-probe"
+  name = "ssh-probe"
 
-  loadbalancer_id     = azurerm_lb.lb.id
-  protocol            = "Tcp"
-  port                = 22
+  loadbalancer_id = azurerm_lb.lb.id
+  protocol        = "Tcp"
+  port            = 22
 }
 
 resource "azurerm_lb_rule" "ssh_rule" {
@@ -64,7 +64,7 @@ resource "azurerm_lb_rule" "ssh_rule" {
   frontend_port                  = 22
   backend_port                   = 22
   frontend_ip_configuration_name = "PublicFrontend"
-  backend_address_pool_ids      = [azurerm_lb_backend_address_pool.bepool.id]
+  backend_address_pool_ids       = [azurerm_lb_backend_address_pool.bepool.id]
   probe_id                       = azurerm_lb_probe.ssh_probe.id
 }
 
@@ -84,17 +84,17 @@ resource "azurerm_public_ip" "natgw_pip" {
 }
 
 resource "azurerm_nat_gateway_public_ip_association" "natgw_assoc" {
-  nat_gateway_id = azurerm_nat_gateway.natgw.id
+  nat_gateway_id       = azurerm_nat_gateway.natgw.id
   public_ip_address_id = azurerm_public_ip.natgw_pip.id
 }
 
 resource "azurerm_subnet_nat_gateway_association" "subnet1_nat" {
-  subnet_id     = azurerm_subnet.subnet1.id
+  subnet_id      = azurerm_subnet.subnet1.id
   nat_gateway_id = azurerm_nat_gateway.natgw.id
 }
 
 resource "azurerm_subnet_nat_gateway_association" "subnet2_nat" {
-  subnet_id     = azurerm_subnet.subnet2.id
+  subnet_id      = azurerm_subnet.subnet2.id
   nat_gateway_id = azurerm_nat_gateway.natgw.id
 }
 
@@ -170,25 +170,25 @@ resource "azurerm_network_interface" "nic2" {
 }
 
 resource "azurerm_network_interface_backend_address_pool_association" "nic1_bep_assoc" {
-  network_interface_id  = azurerm_network_interface.nic1.id
-  ip_configuration_name = "internal"
+  network_interface_id    = azurerm_network_interface.nic1.id
+  ip_configuration_name   = "internal"
   backend_address_pool_id = azurerm_lb_backend_address_pool.bepool.id
 }
 
 resource "azurerm_network_interface_backend_address_pool_association" "nic2_bep_assoc" {
-  network_interface_id  = azurerm_network_interface.nic2.id
-  ip_configuration_name = "internal"
+  network_interface_id    = azurerm_network_interface.nic2.id
+  ip_configuration_name   = "internal"
   backend_address_pool_id = azurerm_lb_backend_address_pool.bepool.id
 }
 
 resource "azurerm_network_interface_security_group_association" "nic1_nsg_assoc" {
-  network_interface_id       = azurerm_network_interface.nic1.id
-  network_security_group_id  = azurerm_network_security_group.nsg.id
+  network_interface_id      = azurerm_network_interface.nic1.id
+  network_security_group_id = azurerm_network_security_group.nsg.id
 }
 
 resource "azurerm_network_interface_security_group_association" "nic2_nsg_assoc" {
-  network_interface_id       = azurerm_network_interface.nic2.id
-  network_security_group_id  = azurerm_network_security_group.nsg.id
+  network_interface_id      = azurerm_network_interface.nic2.id
+  network_security_group_id = azurerm_network_security_group.nsg.id
 }
 
 resource "azurerm_virtual_machine" "vm1" {
@@ -247,7 +247,7 @@ resource "azurerm_virtual_machine" "vm2" {
     create_option     = "FromImage"
     managed_disk_type = "Standard_LRS"
     disk_size_gb      = 30
-    
+
   }
 
   os_profile {
